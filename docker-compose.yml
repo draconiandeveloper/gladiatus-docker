@@ -1,0 +1,71 @@
+version: '3'
+
+networks:
+  static-net:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.0.0/27
+
+volumes:
+  redis_data:
+  sockets:
+  pgdata:
+
+services:
+  database:
+    image: postgres:16-alpine
+    container_name: gladiatus-database
+    restart: always
+    env_file: ./env/database.env
+    volumes:
+      - "pgdata:/var/lib/postgresql/data"
+    ports:
+      - "5432:5432"
+    networks:
+      static-net:
+        ipv4_address: 172.20.0.3
+
+  redis:
+    image: redis:8.0-M04-alpine
+    container_name: gladiatus-redis
+    volumes:
+      - "sockets:/run"
+      - "redis_data:/data"
+      - "./cfg/redis.conf:/usr/local/etc/redis/redis.conf"
+    command: "/bin/sh -c 'redis-server /usr/local/etc/redis/redis.conf'"
+    depends_on:
+      - php
+  
+  php:
+    build:
+      context: docker
+      dockerfile: Dockerfile
+    volumes:
+      - "./app:/var/www/html"
+      - "sockets:/run"
+    develop:
+      watch:
+        - action: sync
+          path: ./app
+          target: /var/www/html
+
+  nginx:
+    image: nginx:alpine-slim
+    container_name: gladiatus-nginx
+    ports:
+      - "8000:443"
+    develop:
+      watch:
+        - action: sync
+          path: ./public
+          target: /var/www/html
+    volumes:
+      - "./cfg/nginx:/etc/nginx"
+      - "./ssl:/root/.ssl"
+      - "sockets:/run"
+    networks:
+      static-net:
+        ipv4_address: 172.20.0.2
+    depends_on:
+      - php
