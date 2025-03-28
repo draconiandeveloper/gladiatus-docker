@@ -4,8 +4,8 @@ WORKDIR /var/www/html
 RUN delgroup dialout
 
 # Install prerequisites for PHP and extensions
-RUN apk update && apk add --no-cache git zip postgresql17-dev sqlite-dev mariadb-dev pcre-dev autoconf make libzip-dev libffi-dev
-RUN docker-php-ext-install pdo zip pdo_pgsql pdo_mysql pdo_sqlite opcache ffi
+RUN apk update && apk add --no-cache git zip postgresql17-dev sqlite-dev mariadb-dev pcre-dev autoconf make libzip-dev
+RUN docker-php-ext-install pdo zip pdo_pgsql pdo_mysql pdo_sqlite opcache
 RUN pecl install --force redis && rm -rf /tmp/pear
 RUN docker-php-ext-enable redis
 
