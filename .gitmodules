@@ -1,6 +1,3 @@
 [submodule "app"]
 	path = app
 	url = https://github.com/draconiandeveloper/gladiatus-app
-[submodule "gladiatus-app"]
-	path = gladiatus-app
-	url = https://github.com/draconiandeveloper/gladiatus-app

@@ -44,6 +44,9 @@ services:
     volumes:
       - "./app:/var/www/html"
       - "sockets:/run"
+    networks:
+      static-net:
+        ipv4_address: 172.20.0.4
     develop:
       watch:
         - action: sync
@@ -54,7 +57,7 @@ services:
     image: nginx:alpine-slim
     container_name: gladiatus-nginx
     ports:
-      - "8000:443"
+      - "443:443"
     develop:
       watch:
         - action: sync

@@ -4,8 +4,8 @@ WORKDIR /var/www/html
 RUN delgroup dialout
 
 # Install prerequisites for PHP and extensions
-RUN apk update && apk add --no-cache git zip postgresql17-dev pcre-dev autoconf make libzip-dev gd-dev
-RUN docker-php-ext-install pdo zip pdo_pgsql opcache gd
+RUN apk update && apk add --no-cache git zip postgresql17-dev sqlite-dev mariadb-dev pcre-dev autoconf make libzip-dev libffi-dev
+RUN docker-php-ext-install pdo zip pdo_pgsql pdo_mysql pdo_sqlite opcache ffi
 RUN pecl install --force redis && rm -rf /tmp/pear
 RUN docker-php-ext-enable redis
 
@@ -18,6 +18,11 @@ RUN sed -i 's/;listen.mode = 0660/listen.mode = 0777/' /usr/local/etc/php-fpm.d/
 
 # Remove the needless zz-docker.conf file
 RUN rm -f /usr/local/etc/php-fpm.d/zz-docker.conf
+
+# Create a crontabs file for www-data user.
+RUN touch /etc/crontabs/www-data
+RUN chown www-data:www-data /etc/crontabs/www-data
+RUN chmod +rw /etc/crontabs/www-data
 
 # Run the PHP-FPM daemon
 CMD ["php-fpm", "-y", "/usr/local/etc/php-fpm.conf", "-F", "-R"]
