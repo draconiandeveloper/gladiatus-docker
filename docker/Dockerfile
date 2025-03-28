@@ -4,10 +4,11 @@ WORKDIR /var/www/html
 RUN delgroup dialout
 
 # Install prerequisites for PHP and extensions
-RUN apk update && apk add --no-cache git zip postgresql17-dev sqlite-dev mariadb-dev pcre-dev autoconf make libzip-dev
-RUN docker-php-ext-install pdo zip pdo_pgsql pdo_mysql pdo_sqlite opcache
-RUN pecl install --force redis && rm -rf /tmp/pear
-RUN docker-php-ext-enable redis
+RUN apk update && apk add --no-cache git zip postgresql17-dev sqlite-dev mariadb-dev pcre-dev autoconf make libzip-dev libffi-dev zstd-dev
+RUN docker-php-ext-install pdo zip pdo_pgsql pdo_mysql pdo_sqlite opcache ffi
+RUN pecl install --force zstd && rm -rf /tmp/pear
+RUN pecl install --configureoptions='enable-redis-zstd="yes"' --force redis && rm -rf /tmp/pear
+RUN docker-php-ext-enable redis zstd
 
 # Set up PHP-FPM to create a UNIX socket file instead of listening through TCP to remove all TCP overheads
 RUN sed -i 's/listen = 127.0.0.1:9000/listen = \/run\/php-fpm.sock/' /usr/local/etc/php-fpm.d/www.conf
