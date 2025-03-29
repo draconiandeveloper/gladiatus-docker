@@ -11,7 +11,7 @@
 - PostgreSQL: `172.20.0.3`
 - Nginx: `172.20.0.2`
 
-# Creating my own SSL certificate
+# Creating your own SSL certificate
 
 `openssl req -new -newkey rsa:4096 -x509 -sha256 -days 365 -nodes -out ssl/gladiatus_lan.crt -keyout ssl/gladiatus_lan.key`
 
@@ -38,10 +38,6 @@ ssl: Where the SSL certificates are stored
 - [ ] Minify and reformat the database structure
 
 - [X] Incorporate Redis
-
-- [ ] Create an API
-
-- [ ] Document the API
 
 - [ ] Create an "installer" to support multiple DBMS types
 
